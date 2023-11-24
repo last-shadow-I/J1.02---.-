@@ -5,13 +5,15 @@ public class SaleDocument extends ShipmentDocument{
 
   private String customer; // получатель (только для продажи)
 
-  public SaleDocument(UUID documentId, Date documentDate, String storage, String storageOwner, int itemsCount, String customer) {
-    super(documentId, documentDate, storage, storageOwner, itemsCount);
+  public SaleDocument(UUID documentId, Date documentDate, String storage, String storageOwner,
+                      String[] itemsArticle, double[] itemsQuantity, double[] itemsPrice, String customer) {
+    super(documentId, documentDate, storage, storageOwner, itemsArticle, itemsQuantity, itemsPrice);
     this.customer = customer;
   }
 
   public SaleDocument() {
   }
+
 
   /**
    * Является ли продажа оптовой для переданного минимального объема.

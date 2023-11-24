@@ -6,13 +6,19 @@ public class MovingDocument extends ShipmentDocument{
   private String movingStorage; // название склада получения (только для перемещения)
   private String movingStorageOwner; // владелец склада получения (только для перемещения)
 
-  public MovingDocument(UUID documentId, Date documentDate, String storage, String storageOwner, int itemsCount, String movingStorage, String movingStorageOwner) {
-    super(documentId, documentDate, storage, storageOwner, itemsCount);
+  public MovingDocument(UUID documentId, Date documentDate, String storage, String storageOwner,
+                        String[] itemsArticle, double[] itemsQuantity, double[] itemsPrice, String movingStorage, String movingStorageOwner) {
+    super(documentId, documentDate, storage, storageOwner, itemsArticle, itemsQuantity, itemsPrice);
     this.movingStorage = movingStorage;
     this.movingStorageOwner = movingStorageOwner;
   }
 
   public MovingDocument() {
+  }
+
+  public double promoSum(String[] promoArticles) {
+    double[] discount = new double[promoArticles.length];
+    return super.promoSum(promoArticles, discount);
   }
 
   /**

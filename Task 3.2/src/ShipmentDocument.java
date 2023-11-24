@@ -14,12 +14,17 @@ public abstract class ShipmentDocument {
   private double[] itemsQuantity; // список количества шт. товаров
   private double[] itemsPrice; // список цен товаров
 
-  public ShipmentDocument(UUID documentId, Date documentDate, String storage, String storageOwner, int itemsCount) {
+  public ShipmentDocument(UUID documentId, Date documentDate, String storage, String storageOwner,
+                          String[] itemsArticle, double[] itemsQuantity, double[] itemsPrice) {
     this.documentId = documentId;
     this.documentDate = documentDate;
     this.storage = storage;
     this.storageOwner = storageOwner;
-    this.itemsCount = itemsCount;
+    this.itemsCount = itemsArticle.length;
+    this.itemsArticle = itemsArticle;
+    this.itemsQuantity = itemsQuantity;
+    this.itemsPrice = itemsPrice;
+
   }
 
   public ShipmentDocument() {
@@ -51,12 +56,23 @@ public abstract class ShipmentDocument {
   /**
    * Суммарная стоимость товаров, попадающих в список промо-акции.
    */
-  public double promoSum(String[] promoArticles) {
+  public double promoSum(String[] promoArticles, double[] discount) {
     double sum = 0;
+    double amountWithDiscount;
     for (int i = 0; i < itemsCount; i++) {
       for (int j = 0; j < promoArticles.length; j++) {
         if (itemsArticle[i] == promoArticles[j]) {
-          sum += Math.round(itemsQuantity[i] * itemsPrice[i] * 100) / 100.0;
+          amountWithDiscount = itemsQuantity[i] * itemsPrice[i];
+
+          if(discount[j] != 0.0){
+            amountWithDiscount *= (1.0 - discount[j]);
+            System.out.println("\nБез округления " + amountWithDiscount);
+            amountWithDiscount = Math.ceil(amountWithDiscount * 100) / 100;
+            System.out.println("C округлением " + amountWithDiscount);
+          } else {
+            System.out.println("Без скидки " + itemsQuantity[i] + " * " + itemsPrice[i] + " = " + amountWithDiscount);
+          }
+          sum += amountWithDiscount;
           break;
         }
       }
@@ -143,6 +159,7 @@ public abstract class ShipmentDocument {
   public void setItemsPrice(double[] itemsPrice) {
     this.itemsPrice = itemsPrice;
   }
+
 
   @Override
   public String toString() {
