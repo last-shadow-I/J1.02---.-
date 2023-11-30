@@ -8,27 +8,18 @@ public abstract class ShipmentDocument {
   private String storage; // название склада отгрузки
   private String storageOwner; // владелец склада отгрузки
   private int itemsCount; // количество товаров в документе
-  private String[] itemsId; // список GUID товаров
-  private String[] itemsArticle; // список артикулов товаров
-  private String[] itemsTitle; // список наваний товаров
-  private double[] itemsQuantity; // список количества шт. товаров
-  private double[] itemsPrice; // список цен товаров
+  private Item[] items; // список товаров
 
-  public ShipmentDocument(UUID documentId, Date documentDate, String storage, String storageOwner,
-                          String[] itemsArticle, double[] itemsQuantity, double[] itemsPrice) {
-    this.documentId = documentId;
-    this.documentDate = documentDate;
-    this.storage = storage;
-    this.storageOwner = storageOwner;
-    this.itemsCount = itemsArticle.length;
-    this.itemsArticle = itemsArticle;
-    this.itemsQuantity = itemsQuantity;
-    this.itemsPrice = itemsPrice;
-
+  public ShipmentDocument(UUID documentId, Date documentDate, String storage, String storageOwner, Item[] items) {
+    setDocumentId(documentId);
+    setDocumentDate(documentDate);
+    setStorage(storage);
+    setStorageOwner(storageOwner);
+    setItemsCount(items.length);
+    setItems(items);
   }
 
-  public ShipmentDocument() {
-  }
+  public ShipmentDocument() {}
 
   /**
    * Суммарная стоимость товаров в документе.
@@ -36,7 +27,8 @@ public abstract class ShipmentDocument {
   public double totalAmount() {
     double sum = 0;
     for (int i = 0; i < itemsCount; i++) {
-      sum += Math.round(itemsQuantity[i] * itemsPrice[i] * 100) / 100.0;
+
+      sum += Math.round(this.items[i].amountItems() * 100) / 100.0;
     }
     return sum;
   }
@@ -46,8 +38,9 @@ public abstract class ShipmentDocument {
    */
   public double itemAmount(String id) {
     for (int i = 0; i < itemsCount; i++) {
-      if (itemsId[i] == id) {
-        return Math.round(itemsQuantity[i] * itemsPrice[i] * 100) / 100.0;
+      if (items[i].getItemId().equals(id)) {
+
+        return Math.round(items[i].amountItems() * 100) / 100.0;
       }
     }
     return 0;
@@ -56,28 +49,21 @@ public abstract class ShipmentDocument {
   /**
    * Суммарная стоимость товаров, попадающих в список промо-акции.
    */
-  public double promoSum(String[] promoArticles, double[] discount) {
+  protected double promoSum(String[] promoArticles) {
     double sum = 0;
-    double amountWithDiscount;
     for (int i = 0; i < itemsCount; i++) {
       for (int j = 0; j < promoArticles.length; j++) {
-        if (itemsArticle[i] == promoArticles[j]) {
-          amountWithDiscount = itemsQuantity[i] * itemsPrice[i];
-
-          if(discount[j] != 0.0){
-            amountWithDiscount *= (1.0 - discount[j]);
-            System.out.println("\nБез округления " + amountWithDiscount);
-            amountWithDiscount = Math.ceil(amountWithDiscount * 100) / 100;
-            System.out.println("C округлением " + amountWithDiscount);
-          } else {
-            System.out.println("Без скидки " + itemsQuantity[i] + " * " + itemsPrice[i] + " = " + amountWithDiscount);
-          }
-          sum += amountWithDiscount;
+        if (items[i].getItemArticle().equals(promoArticles[j])) {
+          sum += items[i].amountItems();
           break;
         }
       }
     }
     return sum;
+  }
+
+  protected double promoSum(String[] promoArticles, double discount){
+    return promoSum(promoArticles);
   }
 
   public UUID getDocumentId() {
@@ -120,53 +106,20 @@ public abstract class ShipmentDocument {
     this.itemsCount = itemsCount;
   }
 
-  public String[] getItemsId() {
-    return itemsId;
+  public Item[] getItems() {
+    return items;
   }
 
-  public void setItemsId(String[] itemsId) {
-    this.itemsId = itemsId;
+  public void setItems(Item[] items) {
+    this.items = items;
   }
-
-  public String[] getItemsArticle() {
-    return itemsArticle;
-  }
-
-  public void setItemsArticle(String[] itemsArticle) {
-    this.itemsArticle = itemsArticle;
-  }
-
-  public String[] getItemsTitle() {
-    return itemsTitle;
-  }
-
-  public void setItemsTitle(String[] itemsTitle) {
-    this.itemsTitle = itemsTitle;
-  }
-
-  public double[] getItemsQuantity() {
-    return itemsQuantity;
-  }
-
-  public void setItemsQuantity(double[] itemsQuantity) {
-    this.itemsQuantity = itemsQuantity;
-  }
-
-  public double[] getItemsPrice() {
-    return itemsPrice;
-  }
-
-  public void setItemsPrice(double[] itemsPrice) {
-    this.itemsPrice = itemsPrice;
-  }
-
 
   @Override
   public String toString() {
     return "documentId=" + documentId +
             ", documentDate=" + documentDate +
             ", storage='" + storage + '\'' +
-            ", storageOwner='" + storageOwner + '\'' +
+            ",\n storageOwner='" + storageOwner + '\'' +
             ", itemsCount=" + itemsCount + ", ";
   }
 }

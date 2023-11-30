@@ -6,29 +6,32 @@ public class SaleDocument extends ShipmentDocument{
   private String customer; // получатель (только для продажи)
 
   public SaleDocument(UUID documentId, Date documentDate, String storage, String storageOwner,
-                      String[] itemsArticle, double[] itemsQuantity, double[] itemsPrice, String customer) {
-    super(documentId, documentDate, storage, storageOwner, itemsArticle, itemsQuantity, itemsPrice);
-    this.customer = customer;
+                      Item[] items, String customer) {
+    super(documentId, documentDate, storage, storageOwner, items);
+    setCustomer(customer);
   }
 
-  public SaleDocument() {
+  @Override
+  public double promoSum(String[] promoArticles, double discount) {
+    double total = super.promoSum(promoArticles);
+    total *= (1 - discount);
+    return Math.round(total * 100) / 100.0;
   }
-
 
   /**
    * Является ли продажа оптовой для переданного минимального объема.
    * Для перемещений неприменимо!
    */
-  boolean isWholesale(double minQuantity) {
+  public boolean isWholesale(double minQuantity) {
     // Убрал проверку на тип документа, т.к. метод имеется только в нужном типе.
     // Использовал getter-ы т.к. поменял модификаторы доступа
     double sumQuantity = 0;
 
     for (int i = 0; i < getItemsCount(); i++) {
-      if (getItemsQuantity()[i] >= minQuantity) {
+      if (getItems()[i].getItemQuantity() >= minQuantity) {
         return true;
       }
-      sumQuantity += getItemsQuantity()[i];
+      sumQuantity += getItems()[i].getItemQuantity();
     }
     return sumQuantity >= minQuantity;
   }
