@@ -6,11 +6,11 @@ public class MovingDocument extends ShipmentDocument{
   private String movingStorage; // название склада получения (только для перемещения)
   private String movingStorageOwner; // владелец склада получения (только для перемещения)
 
-  public MovingDocument(UUID documentId, Date documentDate, String storage, String storageOwner,
-                        String[] itemsArticle, double[] itemsQuantity, double[] itemsPrice, String movingStorage, String movingStorageOwner) {
-    super(documentId, documentDate, storage, storageOwner, itemsArticle, itemsQuantity, itemsPrice);
-    this.movingStorage = movingStorage;
-    this.movingStorageOwner = movingStorageOwner;
+  public MovingDocument(UUID documentId, Date documentDate, String storage,
+                        String storageOwner, Item[] items, String movingStorage, String movingStorageOwner) {
+    super(documentId, documentDate, storage, storageOwner, items);
+    setMovingStorage(movingStorage);
+    setMovingStorageOwner(movingStorageOwner);
   }
 
   public MovingDocument() {
@@ -25,7 +25,7 @@ public class MovingDocument extends ShipmentDocument{
    * Является ли перемещение внутренним (между складами одного владельца).
    * Для продаж неприменимо!
    */
-  boolean isInternalMovement() {
+  public boolean isInternalMovement() {
     // Убрал проверку на тип документа, т.к. метод имеется только в нужном типе.
     // Использовал getter т.к. поменял модификатор доступа
     return getStorageOwner().equals(movingStorageOwner);

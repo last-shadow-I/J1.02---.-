@@ -17,18 +17,23 @@ public class Main {
     double[] quantityArray = {2.0, 3.0, 4.0, 5.0, 6.0, 2.0, 3.0, 1.0, 5.0, 6.0, 2.0, 3.0, 1.0, 5.0, 6.0};
     double[] priceArray = {1.27, 1.0, 3.19, 0.78, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0};
 
-    ShipmentDocument saleDocumentDocument = new SaleDocument(UUID.randomUUID(), date, "1",
-            "Кулешов Роман Глебович", articleArray,
-            quantityArray, priceArray, "Александрова Яна Алексеевна");
+    Item[] items = new Item[articleArray.length];
 
-    System.out.println(saleDocumentDocument.toString());
+    for (int i = 0; i < articleArray.length; i++) {
+      items[i] =  new Item(String.valueOf(i + 1000), articleArray[i], String.valueOf(i), quantityArray[i], priceArray[i]);
+    }
+
+    ShipmentDocument saleDocumentDocument = new SaleDocument(UUID.randomUUID(), date, "1",
+            "Кулешов Роман Глебович", items, "Александрова Яна Алексеевна");
+
+    System.out.println();
+    System.out.println(saleDocumentDocument);
 
     ShipmentDocument movingDocument = new MovingDocument(UUID.randomUUID(), date, "1",
-            "Куликова Ксения Кирилловна", articleArray,
-            quantityArray, priceArray, "2",
+            "Куликова Ксения Кирилловна", items, "2",
             "Лебедева Варвара Тимофеевна");
 
-    System.out.println(movingDocument.toString());
+    System.out.println(movingDocument);
 
     String[] articleArrayTest = {"39063157183", "50331164927"};
 
